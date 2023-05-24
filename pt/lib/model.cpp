@@ -49,7 +49,7 @@ ModelParams::ModelParams(){
                                             //hip, thigh, calf
     this->default_dof_pos  = torch::tensor({ 0.1000,  0.8000, -1.5000,    // front left
                                             -0.1000,  0.8000, -1.5000,    // front right
-                                                0.1000,  1.0000, -1.5000,    // rear  left
+                                             0.1000,  1.0000, -1.5000,    // rear  left
                                             -0.1000,  1.0000, -1.5000 }); // rear  right                                                
     this->damping          = 1;
     this->stiffness        = 40;
@@ -90,6 +90,16 @@ torch::Tensor Model::compute_torques(torch::Tensor actions) {
 
 torch::Tensor Model::compute_observation(){
 
+    printf("compute observation called\n");
+
+    // printf("lin vel size: %d\n", ((this->quat_rotate_inverse(this->base_quat, this->lin_vel)) * this->lin_vel_scale).sizes()[1]);
+    // printf("ang vel size: %d\n", ((this->quat_rotate_inverse(this->base_quat, this->ang_vel)) * this->ang_vel_scale).sizes()[1]);
+    // printf("gravity vec size: %d\n", (this->quat_rotate_inverse(this->base_quat, this->gravity_vec)).sizes()[1]);
+    // printf("commands size: %d\n", (this->commands * this->commands_scale).sizes()[1]);
+    // printf("dof pos size: %d\n", ((this->dof_pos - this->default_dof_pos) * this->dof_pos_scale).sizes()[1]);
+    // printf("dof vel size: %d\n", (this->dof_vel * this->dof_vel_scale).sizes()[1]);
+    // printf("actions size: %d\n\n", (this->actions).sizes()[1]);
+
     torch::Tensor obs = torch::cat(
         {
         (this->quat_rotate_inverse(this->base_quat, this->lin_vel)) * this->lin_vel_scale, 
@@ -98,12 +108,13 @@ torch::Tensor Model::compute_observation(){
         this->commands * this->commands_scale, 
         (this->dof_pos - this->default_dof_pos) * this->dof_pos_scale, 
         this->dof_vel * this->dof_vel_scale, 
-        // torch::tensor({{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }})
         this->actions
         }, 
         1);
 
     obs = torch::clamp(obs, -this->clip_obs, this->clip_obs);
+
+    printf("observation size: %d, %d\n", obs.sizes()[0], obs.sizes()[1]);
 
     return obs;
 }
@@ -126,7 +137,8 @@ void Model::update_observations(torch::Tensor lin_vel, torch::Tensor ang_vel, to
     this->base_quat = base_quat;
     this->dof_pos = dof_pos;
     this->dof_vel = dof_vel;
-    this->actions = actions;
+    // this->actions = actions;
+    printf("updated observations\n");
 }
 
 void Model::init_params(){
@@ -149,11 +161,19 @@ void Model::init_params(){
 }
 
 torch::Tensor Model::forward() {
+    printf("forward called\n");
             
     torch::Tensor obs = this->compute_observation();
-    // std::cout << obs[0] << std::endl;
+    printf("observations calculated\n");
+
     torch::Tensor action = this->module.forward({obs}).toTensor();
+    printf("action calculated\n");
+
     this->actions = action;
-    return torch::clamp(action, -this->clip_actions, this->clip_actions);
+    torch::Tensor clamped = torch::clamp(action, -this->clip_actions, this->clip_actions);
+
+    printf("--------------------------\n\n");
+
+    return clamped;
 }
 

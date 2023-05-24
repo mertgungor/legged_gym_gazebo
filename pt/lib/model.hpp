@@ -58,10 +58,10 @@ class Model {
         void init_observations();
         void init_params();
         Model(std::string model_path, ModelParams params);
+        ModelParams params;
 
     private:
 
-        ModelParams params;
 
         // observation buffer
         torch::jit::script::Module module;

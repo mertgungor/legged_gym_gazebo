@@ -42,6 +42,11 @@ set_property(TARGET a1 PROPERTY CXX_STANDARD 14)
 # ament_target_dependencies(a1 rclcpp Torch)
 
 
+add_executable(dummy_ros src/dummy_ros.cpp)
+target_link_libraries(dummy_ros )
+set_property(TARGET dummy_ros PROPERTY CXX_STANDARD 14)
+ament_target_dependencies(dummy_ros rclcpp )
+
 
 add_executable(a1_ros src/a1_ros.cpp)
 
@@ -64,7 +69,7 @@ ament_target_dependencies(
   std_msgs )
 
 install(TARGETS
-
+  dummy_ros
   a1
   a1_ros
   DESTINATION lib/${PROJECT_NAME})
