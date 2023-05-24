@@ -155,6 +155,18 @@ private:
             std::cout << "Torques " << joint_names[i] << " : " << torques[0][i].item<float>() << std::endl;
         }
 
+        // // calf ofset
+        // dof_pos[2]  -= 0.9;
+        // dof_pos[5]  -= 0.9;
+        // dof_pos[8]  -= 0.9;
+        // dof_pos[11] -= 0.9;
+
+        // // tigh ofset
+        // dof_pos[1]  += 1.5;
+        // dof_pos[4]  += 1.5;
+        // dof_pos[7]  += 1.5;
+        // dof_pos[10] += 1.5;
+
         model.update_observations(
             lin_vel              ,
             ang_vel              ,
