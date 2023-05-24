@@ -80,7 +80,7 @@ void UnitreeCustom::RobotControl()
 
 
     torch::Tensor actions = model.forward();
-    model.update_observations(lin_vel, ang_vel, commands, base_quat, dof_pos, dof_vel, actions);
+    model.update_observations(lin_vel, ang_vel, commands, base_quat, dof_pos, dof_vel);
     torch::Tensor torques = model.compute_torques(actions[0])[0];
 
     udp.GetRecv(state);

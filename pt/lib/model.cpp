@@ -130,14 +130,13 @@ void Model::init_observations(){
     this->actions           = torch::tensor({{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }});
 }
 
-void Model::update_observations(torch::Tensor lin_vel, torch::Tensor ang_vel, torch::Tensor commands, torch::Tensor base_quat, torch::Tensor dof_pos, torch::Tensor dof_vel, torch::Tensor actions){
+void Model::update_observations(torch::Tensor lin_vel, torch::Tensor ang_vel, torch::Tensor commands, torch::Tensor base_quat, torch::Tensor dof_pos, torch::Tensor dof_vel){
     this->lin_vel = lin_vel;
     this->ang_vel = ang_vel;
     this->commands = commands;
     this->base_quat = base_quat;
     this->dof_pos = dof_pos;
     this->dof_vel = dof_vel;
-    // this->actions = actions;
     printf("updated observations\n");
 }
 

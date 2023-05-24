@@ -54,7 +54,7 @@ class Model {
         torch::Tensor compute_torques(torch::Tensor actions);
         torch::Tensor quat_rotate_inverse(torch::Tensor q, torch::Tensor v);
         torch::Tensor compute_observation();
-        void update_observations(torch::Tensor lin_vel, torch::Tensor ang_vel, torch::Tensor commands, torch::Tensor base_quat, torch::Tensor dof_pos, torch::Tensor dof_vel, torch::Tensor actions);
+        void update_observations(torch::Tensor lin_vel, torch::Tensor ang_vel, torch::Tensor commands, torch::Tensor base_quat, torch::Tensor dof_pos, torch::Tensor dof_vel);
         void init_observations();
         void init_params();
         Model(std::string model_path, ModelParams params);

@@ -76,8 +76,7 @@ private:
 
     torch::Tensor dof_pos = torch::zeros({12});
     torch::Tensor dof_vel = torch::zeros({12});
-    torch::Tensor actions = model.forward();
-    torch::Tensor torques = model.compute_torques(actions);
+    torch::Tensor torques = model.compute_torques(model.forward());
 
     std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 
@@ -151,7 +150,6 @@ private:
         // printf("orientation size : %d\n", orientation.sizes()[0]);
         // printf("dof_pos size     : %d\n", dof_pos.sizes()[0]);
         // printf("dof_vel size     : %d\n", dof_vel.sizes()[0]);
-        // printf("actions size     : %d\n\n", actions.sizes()[1]);
 
         for(int i = 0; i < 12; i++){
             std::cout << "Torques " << joint_names[i] << " : " << torques[0][i].item<float>() << std::endl;
@@ -163,12 +161,11 @@ private:
             command              ,
             orientation          ,
             dof_pos              ,
-            dof_vel.view({1, 12}), 
-            actions
+            dof_vel.view({1, 12})
             );
         
-        actions = model.forward();
-        torques = model.compute_torques(actions);
+        
+        torques = model.compute_torques(model.forward());
 
         for(int i = 0; i < joint_command->data.size(); i++){
             joint_command->data[i] = torques[0][i].item<float>();
