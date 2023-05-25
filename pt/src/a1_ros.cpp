@@ -29,7 +29,7 @@ public:
             "cmd_vel", 10, std::bind(&A1Ros::cmd_vel_callback, this, std::placeholders::_1));
 
         odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(
-            "rtabmap/odom", 10, std::bind(&A1Ros::odom_callback, this, std::placeholders::_1));
+            "odom/ground_truth", 10, std::bind(&A1Ros::odom_callback, this, std::placeholders::_1));
 
         joint_state_sub = this->create_subscription<sensor_msgs::msg::JointState>(
             "joint_states", 10, std::bind(&A1Ros::joint_state_callback, this, std::placeholders::_1));
@@ -210,11 +210,11 @@ int main(int argc, char** argv)
     a1_params.dof_vel_scale    = 0.05;
     a1_params.commands_scale   = torch::tensor({a1_params.lin_vel_scale, a1_params.lin_vel_scale, a1_params.ang_vel_scale});
 
-                                               //hip, thigh, calf
-    a1_params.torque_limits    = torch::tensor({{20.0, 55.0, 55.0,   // front left
-                                                 20.0, 55.0, 55.0,   // front right
-                                                 20.0, 55.0, 55.0,   // rear  left
-                                                 20.0, 55.0, 55.0 }}); // rear  right
+                                                   //hip, thigh, calf
+    a1_params.torque_limits    =   torch::tensor({{20.0, 55.0, 55.0,     // front left
+                                                   20.0, 55.0, 55.0,     // front right
+                                                   20.0, 55.0, 55.0,     // rear  left
+                                                   20.0, 55.0, 55.0 }}); // rear  right
 
                                                  
     a1_params.default_dof_pos  = torch::tensor({{ 0.1000,  0.8000, -1.5000,    

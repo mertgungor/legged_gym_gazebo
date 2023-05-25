@@ -46,13 +46,10 @@
     <child link="trunk"/>
   </joint>
 
-  <xacro:depth_sensor>
+  <xacro:depth_sensor camera_link="camera_link_1" camera_name="camera_1">
       <origin xyz="0.3 0 0.05" rpy="0 0 0"/>
   </xacro:depth_sensor>
 
-  <!-- <xacro:sensor_d435 parent="base" use_nominal_extrinsics="false" use_mesh="true">
-    <origin xyz="0.5 0 0.1" rpy="0 0 0"/>
-  </xacro:sensor_d435> -->
 
   <link name="trunk">
     <visual>

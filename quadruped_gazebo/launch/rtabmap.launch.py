@@ -18,12 +18,13 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(rtabmap_launch),
             launch_arguments={
                 'rtabmap_args'      : "--delete_db_on_start --Optimizer/GravitySigma 0.3",
-                'depth_topic'       : "/camera/depth/image_raw",
-                "rgb_topic"         : "/camera/image_raw",
-                "camera_info_topic" : "/camera/camera_info",
+                'depth_topic'       : "/camera_1/camera/depth/image_raw",
+                "rgb_topic"         : "/camera_1/camera/image_raw",
+                "camera_info_topic" : "/camera_1/camera/camera_info",
                 "approx_sync"       : "false", 
-                "frame_id"          : "camera_link",
-                "qos"               : "1"
+                "frame_id"          : "camera_link_1",
+                "qos"               : "1",
+                # "rviz"              : "true",
             }.items()
         ),
 

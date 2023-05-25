@@ -1,7 +1,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:property name="M_PI" value="3.1415926535897931" />
-  <xacro:macro name="depth_sensor" params="*origin">
-    <link name="camera_link">
+  <xacro:macro name="depth_sensor" params="*origin camera_link:=camera_link camera_name:=camera">
+    <link name="${camera_link}">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
@@ -29,7 +29,7 @@
       </inertial>
     </link>
     
-    <gazebo reference="camera_link">  
+    <gazebo reference="${camera_link}">  
       <visual>  
         <material>
           <ambient>0.416 0.051 0.047 1.0</ambient>  
@@ -42,19 +42,19 @@
 
     <joint name="camera_to_base_link" type="fixed">
       <parent link="base_link"/>
-      <child link="camera_link"/>
+      <child link="${camera_link}"/>
       <xacro:insert_block name="origin" />
     </joint>
 
     <link name="camera_depth_link"/>
     <joint name="camera_depth_joint" type="fixed">
       <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
-      <parent link="camera_link"/>
+      <parent link="${camera_link}"/>
       <child link="camera_depth_link"/>
     </joint>
 
     <!-- https://github.com/ros-simulation/gazebo_ros_pkgs/wiki/ROS-2-Migration:-Camera#gazebo_ros_camera -->
-    <gazebo reference="camera_link">
+    <gazebo reference="${camera_link}">
       <sensor name="camera" type="depth">
         <always_on>true</always_on>
         <update_rate>30.0</update_rate>
@@ -68,9 +68,11 @@
         </camera>
         <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
           <ros>
-            <remapping>/camera/camera_info:=/camera/camera_info</remapping>
-            <remapping>/camera/image_raw:=/camera/image_raw</remapping>
-            <remapping>/camera/points:=/camera/depth/color/points</remapping>
+            <remapping>/camera/camera_info:=${camera_name}/camera/camera_info</remapping>
+            <remapping>/camera/image_raw:=${camera_name}/camera/image_raw</remapping>
+            <remapping>/camera/points:=${camera_name}/camera/depth/color/points</remapping>
+            <remapping>/camera/depth/camera_info:=${camera_name}/camera/depth/camera_info</remapping>
+            <remapping>/camera/depth/image_raw:=${camera_name}/camera/depth/image_raw</remapping>
             <!-- <remapping>/camera/depth/image_raw:=/camera/depth/image_rect_raw</remapping> -->
           </ros>
           <min_depth>0.015</min_depth>
