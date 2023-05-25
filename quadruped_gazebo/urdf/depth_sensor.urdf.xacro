@@ -40,25 +40,25 @@
       </visual> 
     </gazebo>rgb(213,28,40)
 
-    <joint name="camera_to_base_link" type="fixed">
+    <joint name="${camera_name}_to_base_link" type="fixed">
       <parent link="base_link"/>
       <child link="${camera_link}"/>
       <xacro:insert_block name="origin" />
     </joint>
 
-    <link name="camera_depth_link"/>
-    <joint name="camera_depth_joint" type="fixed">
+    <link name="${camera_name}_depth_link"/>
+    <joint name="${camera_name}_depth_joint" type="fixed">
       <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
       <parent link="${camera_link}"/>
-      <child link="camera_depth_link"/>
+      <child link="${camera_name}_depth_link"/>
     </joint>
 
     <!-- https://github.com/ros-simulation/gazebo_ros_pkgs/wiki/ROS-2-Migration:-Camera#gazebo_ros_camera -->
     <gazebo reference="${camera_link}">
-      <sensor name="camera" type="depth">
+      <sensor name="${camera_name}" type="depth">
         <always_on>true</always_on>
         <update_rate>30.0</update_rate>
-        <camera name="camera">
+        <camera name="${camera_name}">
           <horizontal_fov>1.50098</horizontal_fov>
           <image>
             <width>640</width>
@@ -68,17 +68,17 @@
         </camera>
         <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
           <ros>
-            <remapping>/camera/camera_info:=${camera_name}/camera/camera_info</remapping>
-            <remapping>/camera/image_raw:=${camera_name}/camera/image_raw</remapping>
-            <remapping>/camera/points:=${camera_name}/camera/depth/color/points</remapping>
-            <remapping>/camera/depth/camera_info:=${camera_name}/camera/depth/camera_info</remapping>
-            <remapping>/camera/depth/image_raw:=${camera_name}/camera/depth/image_raw</remapping>
+            <remapping>/${camera_name}/camera_info:=${camera_name}/camera_info</remapping>
+            <remapping>/${camera_name}/image_raw:=${camera_name}/image_raw</remapping>
+            <remapping>/${camera_name}/points:=${camera_name}/depth/color/points</remapping>
+            <remapping>/${camera_name}/depth/camera_info:=${camera_name}/depth/camera_info</remapping>
+            <remapping>/${camera_name}/depth/image_raw:=${camera_name}/depth/image_raw</remapping>
             <!-- <remapping>/camera/depth/image_raw:=/camera/depth/image_rect_raw</remapping> -->
           </ros>
           <min_depth>0.015</min_depth>
           <max_depth>3.0</max_depth>
           <hack_baseline>0.07</hack_baseline>
-          <frame_name>camera_depth_link</frame_name>
+          <frame_name>${camera_name}_depth_link</frame_name>
           <distortion_k1>0.00000001</distortion_k1>
           <distortion_k2>0.00000001</distortion_k2>
           <distortion_k3>0.00000001</distortion_k3>

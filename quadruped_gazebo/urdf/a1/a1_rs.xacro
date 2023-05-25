@@ -50,6 +50,10 @@
       <origin xyz="0.3 0 0.05" rpy="0 0 0"/>
   </xacro:depth_sensor>
 
+  <xacro:depth_sensor camera_link="camera_link_2" camera_name="camera_2">
+      <origin xyz="-0.3 0 0.05" rpy="0 0 3.14159"/>
+  </xacro:depth_sensor>
+
 
   <link name="trunk">
     <visual>
