@@ -29,7 +29,7 @@ public:
             "cmd_vel", 10, std::bind(&A1Ros::cmd_vel_callback, this, std::placeholders::_1));
 
         odom_sub = this->create_subscription<nav_msgs::msg::Odometry>(
-            "odom/ground_truth", 10, std::bind(&A1Ros::odom_callback, this, std::placeholders::_1));
+            "rtabmap/odom", 10, std::bind(&A1Ros::odom_callback, this, std::placeholders::_1));
 
         joint_state_sub = this->create_subscription<sensor_msgs::msg::JointState>(
             "joint_states", 10, std::bind(&A1Ros::joint_state_callback, this, std::placeholders::_1));

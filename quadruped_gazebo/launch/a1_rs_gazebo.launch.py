@@ -17,6 +17,18 @@ world_path = PathJoinSubstitution(
         [FindPackageShare("quadruped_gazebo"), "worlds", "default.world"]
     )
 
+warehouse_world_path = PathJoinSubstitution(
+        [FindPackageShare("quadruped_gazebo"), "worlds", "industrial-warehouse.sdf"]
+    )
+
+playground_world_path = PathJoinSubstitution(
+        [FindPackageShare("quadruped_gazebo"), "worlds", "playground.world"]
+    )
+
+# gas_station_world_path = PathJoinSubstitution(
+#         [FindPackageShare("quadruped_gazebo"), "worlds", "gas_station.world"]
+#     )
+
 config_path = PathJoinSubstitution(
         [FindPackageShare("quadruped_gazebo"), "config", "a1_ros_control.yaml"]
     )
@@ -63,7 +75,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(gazebo_path),
             launch_arguments={
                 'use_sim_time': str("true"),
-                'world': world_path,
+                'world': playground_world_path,
             }.items()
         ),
 
