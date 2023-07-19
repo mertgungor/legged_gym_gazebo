@@ -34,7 +34,7 @@ int main(void)
                                                  -0.1000,  1.0000, -1.5000 }});   
 
 
-    Model model("/home/mert/pt-cpp/models/policy_1.pt", a1_params);
+    Model model("/home/mert/pt-cpp/models/a1.pt", a1_params);
 
     std::cout << "Communication level is set to LOW-level." << std::endl
               << "WARNING: Make sure the robot is hung up." << std::endl

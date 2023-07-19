@@ -1,0 +1,664 @@
+<?xml version="1.0" ?>
+
+<robot name="comar">
+
+  <link name="comar/base_link"> </link>
+  <joint name="comar/base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="comar/base_link"/>
+    <child link="comar/base_link_inertia"/>
+  </joint>
+  <link name="comar/base_link_inertia">
+    <inertial>
+      <mass value="4.713"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.01683993" ixy="8.3902e-05" ixz="0.000597679" iyy="0.056579028" iyz="2.5134e-05" izz="0.064713601"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_GOVDE.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.267 0.194 0.114"/>
+      </geometry>
+      <!-- <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_GOVDE.stl"/>
+      </geometry> -->
+    </collision>
+  </link>
+  
+  <!-- ================================================_LEG 1 - FL_======================================================== -->
+  <joint name="comar/abad_1_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="20" lower="-0.802851455917" upper="0.802851455917" velocity="52.4"/>
+    <origin rpy="0 0 0" xyz="222.50e-3 65.50e-3 0"/>
+    <axis xyz="1 0 0"/>
+    <parent link="comar/base_link"/>
+    <child link="comar/abad_1"/>
+  </joint>
+  <link name="comar/abad_1">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.003311 0.000635 3.1e-05"/>
+      <mass value="0.696"/>
+      
+      <inertia ixx="1220.42e-06" ixy="-4.428e-06" ixz="-0.8715e-06" iyy="693.402e-06" iyz="158.578e-06" izz="835.772e-06"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_FL.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_FL.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/hip_1_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-1.0471975512" upper="4.18879020479" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0.07675 0.0155 0 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/abad_1"/>
+    <child link="comar/hip_1"/>
+  </joint>
+  <link name="comar/hip_1">
+    <inertial>
+      <origin xyz="-0.00309 0.05402 -0.02642"/>
+      <mass value="1.013"/>
+      <inertia ixx="0.005529065" ixy="4.825e-06" ixz="0.000343869" iyy="0.005139339" iyz="2.2448e-05" izz="0.001367788"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_L.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_L.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/knee_1_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-2.69653369433" upper="-0.916297857297" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0 0.08024 -0.2 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/hip_1"/>
+    <child link="comar/knee_1"/>
+  </joint>
+  <link name="comar/knee_1">
+    <inertial>
+      <origin xyz="0.00708 -0.0009 0.13802"/>
+      <mass value="0.166"/>
+      <inertia ixx="0.002997972" ixy="0.0" ixz="-0.000141163" iyy="0.003014022" iyz="0.0" izz="3.2426e-05"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/foot_1_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 -0.199696 "/>
+    <parent link="comar/knee_1"/>
+    <child link="comar/foot_1"/>
+  </joint>
+  <link name="comar/foot_1">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0"/>
+      <mass value="0.06"/>
+      <inertia ixx="9.6e-06" ixy="0.0" ixz="0.0" iyy="9.6e-06" iyz="0.0" izz="9.6e-06"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- ================================================_LEG 2 - FR_======================================================== -->
+  <joint name="comar/abad_2_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="20" lower="-0.802851455917" upper="0.802851455917" velocity="52.4"/>
+    <origin rpy="0 0 0" xyz="222.50e-3 -65.50e-3 0"/>
+    <axis xyz="1 0 0"/>
+    <parent link="comar/base_link"/>
+    <child link="comar/abad_2"/>
+  </joint>
+  <link name="comar/abad_2">
+    <inertial>
+      <origin xyz="-0.011366 -0.007729 0.0048783"/>
+      <mass value="0.696"/>
+      <!-- [kg] -->
+      <inertia ixx="0.000469246" ixy="9.409e-06" ixz="-3.42e-07" iyy="0.00080749" iyz="4.66e-07" izz="0.000552929"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_FR.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_FR.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="comar/hip_2_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-1.0471975512" upper="4.18879020479" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0.07675 -0.0155 0 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/abad_2"/>
+    <child link="comar/hip_2"/>
+  </joint>
+  <link name="comar/hip_2">
+    <inertial>
+      <origin xyz="-0.00309 -0.05402 -0.02642"/>
+      <mass value="1.013"/>
+      <inertia ixx="0.005529065" ixy="-4.825e-06" ixz="0.000343869" iyy="0.005139339" iyz="-2.2448e-05" izz="0.001367788"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_R.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_R.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/knee_2_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-2.69653369433" upper="-0.916297857297" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0 -0.08024 -0.2 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/hip_2"/>
+    <child link="comar/knee_2"/>
+  </joint>
+  <link name="comar/knee_2">
+    <inertial>
+      <origin xyz="0.00708 0.0009 0.13802"/>
+      <mass value="0.166"/>
+      <inertia ixx="0.002997972" ixy="0.0" ixz="-0.000141163" iyy="0.003014022" iyz="0.0" izz="3.2426e-05"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/foot_2_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 -0.199696 "/>
+    <parent link="comar/knee_2"/>
+    <child link="comar/foot_2"/>
+  </joint>
+  <link name="comar/foot_2">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0"/>
+      <mass value="0.06"/>
+      <inertia ixx="9.6e-06" ixy="0.0" ixz="0.0" iyy="9.6e-06" iyz="0.0" izz="9.6e-06"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- ================================================_LEG 4 - RL_======================================================== -->
+  <joint name="comar/abad_4_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="20" lower="-0.802851455917" upper="0.802851455917" velocity="52.4"/>
+    <origin rpy="0 0 0" xyz="-222.50e-3 -65.50e-3 0"/>
+    <axis xyz="1 0 0"/>
+    <parent link="comar/base_link"/>
+    <child link="comar/abad_4"/>
+  </joint>
+  <link name="comar/abad_4">
+    <inertial>
+      <origin xyz="0.011366 -0.007729 0.0048783"/>
+      <mass value="0.696"/>
+      <inertia ixx="0.000469246" ixy="-9.409e-06" ixz="3.42e-07" iyy="0.00080749" iyz="4.66e-07" izz="0.000552929"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_HR.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_HR.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/hip_4_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-1.0471975512" upper="4.18879020479" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="-0.07675 -0.0155 0 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/abad_4"/>
+    <child link="comar/hip_4"/>
+  </joint>
+  <link name="comar/hip_4">
+    <inertial>
+      <origin xyz="-0.00309 -0.05402 -0.02642"/>
+      <mass value="1.013"/>
+      <inertia ixx="0.005529065" ixy="-4.825e-06" ixz="0.000343869" iyy="0.005139339" iyz="-2.2448e-05" izz="0.001367788"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_R.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_R.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/knee_4_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-2.69653369433" upper="-0.916297857297" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0 -0.08024 -0.2 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/hip_4"/>
+    <child link="comar/knee_4"/>
+  </joint>
+  <link name="comar/knee_4">
+    <inertial>
+      <origin xyz="0.00708 -0.0009 0.13802"/>
+      <mass value="0.166"/>
+      <inertia ixx="0.002997972" ixy="0.0" ixz="-0.000141163" iyy="0.003014022" iyz="0.0" izz="3.2426e-05"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/foot_4_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 -0.199696 "/>
+    <parent link="comar/knee_4"/>
+    <child link="comar/foot_4"/>
+  </joint>
+  <link name="comar/foot_4">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0"/>
+      <mass value="0.06"/>
+      <inertia ixx="9.6e-06" ixy="0.0" ixz="0.0" iyy="9.6e-06" iyz="0.0" izz="9.6e-06"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- ================================================_LEG 4 - RR_======================================================== -->
+  <joint name="comar/abad_3_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="20" lower="-0.802851455917" upper="0.802851455917" velocity="52.4"/>
+    <origin rpy="0 0 0" xyz="-222.50e-3 65.50e-3 0"/>
+    <axis xyz="1 0 0"/>
+    <parent link="comar/base_link"/>
+    <child link="comar/abad_3"/>
+  </joint>
+  <link name="comar/abad_3">
+    <inertial>
+      <origin xyz="0.011366 0.007729 0.0048783"/>
+      <mass value="0.696"/>
+      <inertia ixx="0.000469246" ixy="9.409e-06" ixz="3.42e-07" iyy="0.00080749" iyz="-4.66e-07" izz="0.000552929"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_HL.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_ABDUCTION_HL.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/hip_3_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-1.0471975512" upper="4.18879020479" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="-0.07675 0.0155 0 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/abad_3"/>
+    <child link="comar/hip_3"/>
+  </joint>
+  <link name="comar/hip_3">
+    <inertial>
+      <origin xyz="-0.00309 0.05402 -0.02642"/>
+      <mass value="1.013"/>
+      <inertia ixx="0.005529065" ixy="4.825e-06" ixz="0.000343869" iyy="0.005139339" iyz="2.2448e-05" izz="0.001367788"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_L.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_HIP_L.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/knee_3_joint" type="revolute">
+    <dynamics damping="0" friction="0"/>
+    <limit effort="55" lower="-2.69653369433" upper="-0.916297857297" velocity="28.6"/>
+    <origin rpy="0 0 0" xyz="0 0.08024 -0.2 "/>
+    <axis xyz="0 1 0"/>
+    <parent link="comar/hip_3"/>
+    <child link="comar/knee_3"/>
+  </joint>
+  <link name="comar/knee_3">
+    <inertial>
+      <origin xyz="0.00708 0.0009 0.13802"/>
+      <mass value="0.166"/>
+      <inertia ixx="0.002997972" ixy="0.0" ixz="-0.000141163" iyy="0.003014022" iyz="0.0" izz="3.2426e-05"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_KNEE.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="comar/foot_3_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 -0.199696 "/>
+    <parent link="comar/knee_3"/>
+    <child link="comar/foot_3"/>
+  </joint>
+  <link name="comar/foot_3">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0"/>
+      <mass value="0.06"/>
+      <inertia ixx="9.6e-06" ixy="0.0" ixz="0.0" iyy="9.6e-06" iyz="0.0" izz="9.6e-06"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find quadruped_gazebo)/meshes/aselsan/ROBOT_FOOT.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+<!-- /////////////////// GAZEBO /////////////////// -->
+
+  <!-- .............HIP JOINTS............. -->
+
+  <!-- FL -->
+
+  <ros2_control name="comar/abad_1" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/abad_1_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- FR -->
+
+  <ros2_control name="comar/abad_2" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/abad_2_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RL -->
+
+  <ros2_control name="comar/abad_3" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/abad_3_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RR -->
+
+  <ros2_control name="comar/abad_4" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/abad_4_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- .............THIGH JOINTS............. -->
+
+  <!-- FL -->
+
+  <ros2_control name="comar/hip_1" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/hip_1_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- FR -->
+
+  <ros2_control name="comar/hip_2" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/hip_2_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RL -->
+
+  <ros2_control name="comar/hip_3" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/hip_3_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RR -->
+
+  <ros2_control name="comar/hip_4" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/hip_4_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- .............CALF JOINTS............. -->
+
+  <!-- FL -->
+
+  <ros2_control name="comar/knee_1" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/knee_1_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- FR -->
+
+  <ros2_control name="comar/knee_2" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/knee_2_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RL -->
+
+  <ros2_control name="comar/knee_3" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/knee_3_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- RR -->
+
+  <ros2_control name="comar/knee_4" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <joint name="comar/knee_4_joint">
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- .............GAZEBO............. -->
+  
+  <gazebo>
+    <plugin filename="libgazebo_ros_p3d.so" name="p3d_base_controller">
+      <ros>
+        <!-- <namespace>/demo</namespace> -->
+        <argument>odom:=odom/ground_truth</argument>
+      </ros>
+      <body_name>comar/base_link</body_name>
+      <frame_name>world</frame_name>
+      <update_rate>250.0</update_rate>
+      <xyz_offset>0 0 0</xyz_offset>
+      <rpy_offset>0 0 0</rpy_offset>
+      <gaussian_noise>0.01</gaussian_noise>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <parameters>$(find quadruped_gazebo)/config/aselsan_ros_control.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>
+

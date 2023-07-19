@@ -12,6 +12,15 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>gazebo_ros</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>effort_controllers</depend>
+  <depend>joint_trajectory_controller</depend>
+
+
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

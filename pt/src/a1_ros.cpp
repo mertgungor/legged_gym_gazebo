@@ -224,7 +224,7 @@ int main(int argc, char** argv)
 
     std::string share_directory = ament_index_cpp::get_package_share_directory("pt");
 
-    Model model(share_directory + "/models/policy_1.pt", a1_params);
+    Model model(share_directory + "/models/a1.pt", a1_params);
 
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<A1Ros>(model));

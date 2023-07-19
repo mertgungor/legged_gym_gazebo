@@ -18,7 +18,7 @@ world_path = PathJoinSubstitution(
     )
 
 warehouse_world_path = PathJoinSubstitution(
-        [FindPackageShare("quadruped_gazebo"), "worlds", "industrial-warehouse.sdf"]
+        [FindPackageShare("quadruped_gazebo"), "worlds", "warehouse.sdf"]
     )
 
 playground_world_path = PathJoinSubstitution(

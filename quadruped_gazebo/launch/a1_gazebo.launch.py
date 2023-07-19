@@ -17,6 +17,10 @@ world_path = PathJoinSubstitution(
         [FindPackageShare("quadruped_gazebo"), "worlds", "default.world"]
     )
 
+anitkabir_path = PathJoinSubstitution(
+        [FindPackageShare("quadruped_gazebo"), "worlds", "anitkabir.world"]
+    )
+
 config_path = PathJoinSubstitution(
         [FindPackageShare("quadruped_gazebo"), "config", "a1_ros_control.yaml"]
     )
@@ -63,7 +67,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(gazebo_path),
             launch_arguments={
                 'use_sim_time': str("true"),
-                'world': world_path,
+                'world': anitkabir_path,
             }.items()
         ),
 

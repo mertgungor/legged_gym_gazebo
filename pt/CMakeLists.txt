@@ -47,7 +47,7 @@ target_link_libraries(dummy_ros )
 set_property(TARGET dummy_ros PROPERTY CXX_STANDARD 14)
 ament_target_dependencies(dummy_ros rclcpp )
 
-
+# a1 ros
 add_executable(a1_ros src/a1_ros.cpp)
 
 target_link_libraries(
@@ -68,10 +68,33 @@ ament_target_dependencies(
   sensor_msgs
   std_msgs )
 
+# aselsan ros
+
+add_executable(aselsan_ros src/aselsan_ros.cpp)
+
+target_link_libraries(
+  aselsan_ros model 
+  unitree_custom 
+  ament_index_cpp::ament_index_cpp 
+  ${rclcpp_LIBRARIES} 
+  ${EXTRA_LIBS} 
+  "${TORCH_LIBRARIES}")
+
+set_property(TARGET a1 PROPERTY CXX_STANDARD 14)
+ament_target_dependencies(
+  aselsan_ros 
+  geometry_msgs 
+  nav_msgs 
+  rclcpp 
+  Torch
+  sensor_msgs
+  std_msgs )
+
 install(TARGETS
   dummy_ros
   a1
   a1_ros
+  aselsan_ros
   DESTINATION lib/${PROJECT_NAME})
 
 install(
