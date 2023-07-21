@@ -1,0 +1,79 @@
+clip_obs     : 100
+clip_actions : 100
+damping      : 1.0
+stiffness    : 40.0
+action_scale : 0.25
+lin_vel      : 2.0
+ang_vel      : 0.25
+dof_pos      : 1.0
+dof_vel      : 0.05
+model_path   : "comar/model_300.pt"
+num_observations: 48
+
+              # hip, thigh, calf
+torque_limits: [20., 55., 55., # front left
+                20., 55., 55., # front right
+                20., 55., 55., # rear  left
+                20., 55., 55.] # rear  right
+
+                    
+default_dof_pos: [ 
+                # hip,   thigh,  calf
+                 0.1000,  0.8, -1.5,  # front left
+                -0.1000,  0.8, -1.5,  # front right
+                 0.1000,  1.0, -1.5,  # rear  left
+                -0.1000,  1.0, -1.5   # rear  right
+                ]
+
+joint_names  : [
+        "comar/abad_1_joint",
+        "comar/hip_1_joint" ,
+        "comar/knee_1_joint",
+
+        "comar/abad_2_joint",
+        "comar/hip_2_joint" ,
+        "comar/knee_2_joint",
+
+        "comar/abad_3_joint",
+        "comar/hip_3_joint" ,
+        "comar/knee_3_joint",
+
+        "comar/abad_4_joint",
+        "comar/hip_4_joint" ,
+        "comar/knee_4_joint",
+        ]
+
+algorithm:
+        clip_param            : 0.2
+        desired_kl            : 0.01
+        entropy_coef          : 0.01
+        gamma                 : 0.99
+        lam                   : 0.95
+        learning_rate         : 0.001
+        max_grad_norm         : 1.0
+        num_learning_epochs   : 5
+        num_mini_batches      : 4
+        schedule              : 'adaptive'
+        use_clipped_value_loss: True
+        value_loss_coef       : 1.0            
+
+init_member_classes: {}
+
+policy:
+        activation        : 'elu'
+        actor_hidden_dims : [128, 64, 32]
+        critic_hidden_dims: [128, 64, 32]
+        init_noise_std    : 1.0            
+
+runner: 
+        algorithm_class_name: 'PPO'
+        checkpoint          : -1
+        experiment_name     : 'aselsan_flat'
+        load_run            : -1
+        max_iterations      : 500
+        num_steps_per_env   : 24
+        policy_class_name   : 'ActorCritic' 
+        resume              : True 
+        resume_path         : None
+        run_name            : 'aselsan_flat'
+        save_interval       : 50
