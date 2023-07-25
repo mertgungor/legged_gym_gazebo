@@ -41,7 +41,7 @@ class ObservationNode(Node):
         super().__init__('observation_node')
         
         self.visualize_height = True
-        self.device = 'cuda:0'
+        self.device = 'cpu'
 
         install_dir          = get_package_share_directory('quadruped_model')
         a1_config_path       = os.path.join(install_dir, "config", "a1_params.yaml")
@@ -50,6 +50,11 @@ class ObservationNode(Node):
         go1_config_path      = os.path.join(install_dir, "config", "go1_params.yaml")
         cheetah_config_path  = os.path.join(install_dir, "config", "cheetah_params.yaml")
 
+        self.joint_pos_err_last_last = torch.zeros((1, 12), device=self.device)
+        self.joint_pos_err_last      = torch.zeros((1, 12), device=self.device)
+
+        self.joint_vel_last_last = torch.zeros((1, 12), device=self.device)
+        self.joint_vel_last      = torch.zeros((1, 12), device=self.device)
 
         if task == "a1_flat":
             print("config path: ", a1_config_path)
@@ -77,10 +82,16 @@ class ObservationNode(Node):
         with open(config_path) as f:
             self.params = yaml.load(f, Loader=SafeLoader)
 
+        self.joint_state = JointState()
+        self.odometry = Odometry()
+
         self.logging = False
         self.controller = "joint_group_effort_controller"
         self.joint_trajectory_topic = "/{}/joint_trajectory".format(self.controller)
         self.joint_torque_topic = "/{}/commands".format(self.controller)
+
+        self.join_state_pose_tensor = torch.zeros((12), device=self.device)
+        self.join_state_vel_tensor  = torch.zeros((12), device=self.device)
 
 
         self.clip_obs = self.params["clip_obs"]
@@ -102,8 +113,7 @@ class ObservationNode(Node):
 
         self.num_of_dofs = 12
 
-        self.joint_state = JointState()
-        self.odometry = Odometry()
+        
 
         self.base_lin_vel = torch.tensor([] * 3, device=self.device)
         self.base_ang_vel = torch.tensor([] * 3, device=self.device)
@@ -132,11 +142,11 @@ class ObservationNode(Node):
 
         self.calculate_command()
 
-
-        self.obs_buf = torch.tensor([], device=self.device)
         self.obs_history = torch.zeros(1, 30*70, dtype=torch.float,
                                        device=self.device, requires_grad=False)
 
+        actuator_path = "/home/mert/ros-pt/src/quadruped_model/models/a1_flat/unitree_go1.pt"
+        self.actuator_network = torch.jit.load(actuator_path).to(self.device)
 
         self.joint_names = self.params["joint_names"]
 
@@ -189,26 +199,31 @@ class ObservationNode(Node):
             self.joint_state.position[i] = joint_pose_dict[self.joint_names[i]]
             self.joint_state.velocity[i] = joint_vels_dict[self.joint_names[i]]
 
+        self.join_state_pose_tensor = torch.tensor(self.joint_state.position)
+        self.join_state_vel_tensor  = torch.tensor(self.joint_state.velocity).view(1, 12)
+
 
     def odometry_callback(self, msg):             
         self.odometry = msg
 
     def calculate_command(self):
 
-        gaits = {"pronking": [0,   0,   0  ],
-                "trotting" : [0.5, 0,   0  ],
-                "bounding" : [0,   0.5, 0  ],
-                "pacing"   : [0,   0,   0.5]}
+        gaits = {"pronking" : [0,   0,   0  ],
+                 "trotting" : [0.5, 0,   0  ],
+                 "bounding" : [0,   0.5, 0  ],
+                 "pacing"   : [0,   0,   0.5]}
 
-        x_vel_cmd, y_vel_cmd, yaw_vel_cmd = 0.0, 0.0, 0.0
+        x_vel_cmd, y_vel_cmd, yaw_vel_cmd = 1.0, 0.0, 0.0
         body_height_cmd = 0.0
-        step_frequency_cmd = 3.0
+        step_frequency_cmd = 1.0
         gait = torch.tensor(gaits["trotting"])
-        footswing_height_cmd = 0.08
+        footswing_height_cmd = 0.04
         pitch_cmd = 0.0
         roll_cmd = 0.0
         stance_width_cmd = 0.25
         duration = 0.5
+        stance_length_cmd = 0.5
+        aux_reward_coef = 2.1376e-04 
 
         self.mit_commands[:, 0]   = x_vel_cmd
         self.mit_commands[:, 1]   = y_vel_cmd
@@ -221,8 +236,8 @@ class ObservationNode(Node):
         self.mit_commands[:, 10]  = pitch_cmd
         self.mit_commands[:, 11]  = roll_cmd
         self.mit_commands[:, 12]  = stance_width_cmd
-        self.mit_commands[:, 13]  = 4.2803e-01 
-        self.mit_commands[:, 14]  = 2.1376e-04 
+        self.mit_commands[:, 13]  = stance_length_cmd
+        self.mit_commands[:, 14]  = aux_reward_coef
 
         
         print("commands shape: ", self.mit_commands.shape)
@@ -276,23 +291,27 @@ class ObservationNode(Node):
                                            self.clock_inputs
                                            ), dim=-1)
 
+        self.mit_observations = torch.clip(self.mit_observations, -self.clip_obs, self.clip_obs)
+
         self.obs_history = torch.cat((self.obs_history[:, 70:], self.mit_observations), dim=-1)
         self.latent = self.adaptation_module.forward(self.obs_history.cpu())
+        # self.latent = torch.tensor([[1.5, -0.5]])
         print("latent: ",self.latent)
 
-        self.mit_actions = self.body_module.forward(torch.cat((self.obs_history.cpu(), self.latent), dim=-1))
-        
 
-        self.obs_buf = torch.clip(self.obs_buf, -self.clip_obs, self.clip_obs)
-        
+        self.mit_actions = self.body_module.forward(torch.cat((self.obs_history.cpu(), self.latent), dim=-1))
+        self.actions = torch.clip(self.mit_actions, -self.clip_actions, self.clip_actions).to(self.device)
+                
         self.prev_actions = self.mit_actions.to(self.device).clone().detach()
 
-        self.mit_actions = torch.clip(self.mit_actions, -self.clip_actions, self.clip_actions).to(self.device)
+        # self.mit_actions = torch.clip(self.mit_actions, -self.clip_actions, self.clip_actions).to(self.device)
 
 
         # ------------------- Publish Joint Torques ------------------- #
 
-        torques = self.compute_torques(self.mit_actions * self.action_scale)
+        # torques = self.compute_torques(self.mit_actions * self.action_scale)
+        torques = self._compute_torques(self.mit_actions)
+
 
         self.publish_trajectory_torques(torques.tolist()[0])
         
@@ -300,8 +319,6 @@ class ObservationNode(Node):
         duration = end_time - start_time
         # print(duration)
         
-
-        return self.obs_buf
 
     def quat_rotate_inverse(self, q, v):
         shape = q.shape
@@ -319,15 +336,72 @@ class ObservationNode(Node):
         arr = Float64MultiArray()
 
         arr.data = torques
+        print("torques: ", arr.data)
         # print(torques, "\n -------------- \n")
-        # self.joint_torque_publisher.publish(arr)
+        self.joint_torque_publisher.publish(arr)
 
 
-    def compute_torques(self, actions):
+    # def compute_torques(self, actions):
 
-        torques = self.p_gains*(actions + self.default_dof_pos - self.dof_pos) - self.d_gains*self.dof_vel
+    #     torques = self.p_gains*(actions + self.default_dof_pos - self.dof_pos) - self.d_gains*self.dof_vel
+
+    #     return torch.clip(torques, -self.torque_limits, self.torque_limits)
+
+    def _compute_torques(self, actions):
+        """ Compute torques from actions.
+            Actions can be interpreted as position or velocity targets given to a PD controller, or directly as scaled torques.
+            [NOTE]: torques must have the same dimension as the number of DOFs, even if some DOFs are not actuated.
+
+        Args:
+            actions (torch.Tensor): Actions
+
+        Returns:
+            [torch.Tensor]: Torques sent to the simulation
+        """
+        # pd controller
+        actions_scale = 0.25
+        hip_scale_reduction = 0.5
+
+        actions_scaled = actions[:, :12] * actions_scale
+        actions_scaled[:, [0, 3, 6, 9]] *=  hip_scale_reduction  # scale down hip flexion range
+
+        self.joint_pos_target = actions_scaled + self.default_dof_pos
+        
+
+        self.joint_pos_err = self.join_state_pose_tensor - self.joint_pos_target
+        self.joint_vel     = self.join_state_vel_tensor
+
+        # print("joint pose err: ", self.joint_pos_err.shape)
+        # print("joint pose err last: ", self.joint_pos_err_last.shape)
+        # print("joint pose err last last: ", self.joint_pos_err_last_last.shape)
+
+
+        # print("joint vel: ", self.joint_vel.shape)
+        # print("joint vel last: ", self.joint_vel_last.shape)
+        # print("joint vel last last: ", self.joint_vel_last_last.shape)
+
+
+        torques = self.eval_actuator_network(self.joint_pos_err, self.joint_pos_err_last, self.joint_pos_err_last_last,
+                                        self.joint_vel.view(1, 12), self.joint_vel_last.view(1, 12), self.joint_vel_last_last.view(1, 12))
+        
+        self.joint_pos_err_last_last = torch.clone(self.joint_pos_err_last)
+        self.joint_pos_err_last      = torch.clone(self.joint_pos_err)
+        self.joint_vel_last_last     = torch.clone(self.joint_vel_last)
+        self.joint_vel_last          = torch.clone(self.joint_vel)
+
 
         return torch.clip(torques, -self.torque_limits, self.torque_limits)
+    
+    def eval_actuator_network(self, joint_pos, joint_pos_last, joint_pos_last_last, joint_vel, joint_vel_last,
+                                      joint_vel_last_last):
+                xs = torch.cat((joint_pos.unsqueeze(-1),
+                                joint_pos_last.unsqueeze(-1),
+                                joint_pos_last_last.unsqueeze(-1),
+                                joint_vel.unsqueeze(-1),
+                                joint_vel_last.unsqueeze(-1),
+                                joint_vel_last_last.unsqueeze(-1)), dim=-1)
+                torques = self.actuator_network(xs.view(1 * 12, 6))
+                return torques.view(1, 12)
     
 
 

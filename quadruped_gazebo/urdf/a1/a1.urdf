@@ -735,7 +735,7 @@
       </ros>
       <body_name>base</body_name>
       <frame_name>world</frame_name>
-      <update_rate>250.0</update_rate>
+      <update_rate>2000.0</update_rate>
       <xyz_offset>0 0 0</xyz_offset>
       <rpy_offset>0 0 0</rpy_offset>
       <gaussian_noise>0.01</gaussian_noise>

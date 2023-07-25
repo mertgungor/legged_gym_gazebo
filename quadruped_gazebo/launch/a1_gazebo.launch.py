@@ -67,7 +67,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(gazebo_path),
             launch_arguments={
                 'use_sim_time': str("true"),
-                'world': anitkabir_path,
+                'world': world_path,
             }.items()
         ),
 
