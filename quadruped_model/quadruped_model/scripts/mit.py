@@ -96,6 +96,7 @@ class ObservationNode(Node):
 
         self.clip_obs = self.params["clip_obs"]
         self.clip_actions = self.params["clip_actions"]
+        
 
         self.torque_limits = torch.tensor([self.params["torque_limits"]], device=self.device)
 
@@ -278,12 +279,12 @@ class ObservationNode(Node):
         
         start_time = time.time()
 
-        base_lin_vel_list = torch.tensor([[self.odometry.twist.twist.linear.x, self.odometry.twist.twist.linear.y, self.odometry.twist.twist.linear.z   ]], device=self.device)
-        base_ang_vel_list = torch.tensor([[self.odometry.twist.twist.angular.x, self.odometry.twist.twist.angular.y, self.odometry.twist.twist.angular.z]], device=self.device)
-
-        self.base_quat    = torch.tensor([[self.odometry.pose.pose.orientation.x, self.odometry.pose.pose.orientation.y, self.odometry.pose.pose.orientation.z, self.odometry.pose.pose.orientation.w]], device=self.device)
-        self.base_lin_vel = self.quat_rotate_inverse(self.base_quat, base_lin_vel_list)
-        self.base_ang_vel = self.quat_rotate_inverse(self.base_quat, base_ang_vel_list)
+        self.base_quat    = torch.tensor([[self.odometry.pose.pose.orientation.x, 
+                                           self.odometry.pose.pose.orientation.y, 
+                                           self.odometry.pose.pose.orientation.z, 
+                                           self.odometry.pose.pose.orientation.w]], 
+                                           device=self.device)
+        
         self.dof_pos      = torch.tensor([self.joint_state.position[:]], device=self.device)
         self.dof_vel      = torch.tensor([self.joint_state.velocity[:]], device=self.device)
         
@@ -369,8 +370,8 @@ class ObservationNode(Node):
         self.joint_pos_err = self.join_state_pose_tensor - self.joint_pos_target
         self.joint_vel     = self.join_state_vel_tensor
 
-        # controller = "P"
-        controller = "actuator_network"
+        controller = "P"
+        # controller = "actuator_network"
 
         if controller == "actuator_network":
 
