@@ -260,6 +260,14 @@ class ObservationNode(Node):
 
         self.foot_indices = torch.remainder(torch.cat([foot_indices[i].unsqueeze(1) for i in range(4)], dim=1), 1.0)
 
+        for idxs in foot_indices:
+                stance_idxs = torch.remainder(idxs, 1) < durations
+                swing_idxs = torch.remainder(idxs, 1) > durations
+
+                idxs[stance_idxs] = torch.remainder(idxs[stance_idxs], 1) * (0.5 / durations[stance_idxs])
+                idxs[swing_idxs] = 0.5 + (torch.remainder(idxs[swing_idxs], 1) - durations[swing_idxs]) * (
+                            0.5 / (1 - durations[swing_idxs]))
+
         self.clock_inputs[:, 0] = torch.sin(2 * np.pi * foot_indices[0])
         self.clock_inputs[:, 1] = torch.sin(2 * np.pi * foot_indices[1])
         self.clock_inputs[:, 2] = torch.sin(2 * np.pi * foot_indices[2])
@@ -348,17 +356,7 @@ class ObservationNode(Node):
     #     return torch.clip(torques, -self.torque_limits, self.torque_limits)
 
     def _compute_torques(self, actions):
-        """ Compute torques from actions.
-            Actions can be interpreted as position or velocity targets given to a PD controller, or directly as scaled torques.
-            [NOTE]: torques must have the same dimension as the number of DOFs, even if some DOFs are not actuated.
 
-        Args:
-            actions (torch.Tensor): Actions
-
-        Returns:
-            [torch.Tensor]: Torques sent to the simulation
-        """
-        # pd controller
         actions_scale = 0.25
         hip_scale_reduction = 0.5
 
@@ -371,23 +369,23 @@ class ObservationNode(Node):
         self.joint_pos_err = self.join_state_pose_tensor - self.joint_pos_target
         self.joint_vel     = self.join_state_vel_tensor
 
-        # print("joint pose err: ", self.joint_pos_err.shape)
-        # print("joint pose err last: ", self.joint_pos_err_last.shape)
-        # print("joint pose err last last: ", self.joint_pos_err_last_last.shape)
+        # controller = "P"
+        controller = "actuator_network"
 
+        if controller == "actuator_network":
 
-        # print("joint vel: ", self.joint_vel.shape)
-        # print("joint vel last: ", self.joint_vel_last.shape)
-        # print("joint vel last last: ", self.joint_vel_last_last.shape)
+            torques = self.eval_actuator_network(self.joint_pos_err, self.joint_pos_err_last, self.joint_pos_err_last_last,
+                                            self.joint_vel.view(1, 12), self.joint_vel_last.view(1, 12), self.joint_vel_last_last.view(1, 12))
+            
+            self.joint_pos_err_last_last = torch.clone(self.joint_pos_err_last)
+            self.joint_pos_err_last      = torch.clone(self.joint_pos_err)
+            self.joint_vel_last_last     = torch.clone(self.joint_vel_last)
+            self.joint_vel_last          = torch.clone(self.joint_vel)
 
+        elif controller == "P":
 
-        torques = self.eval_actuator_network(self.joint_pos_err, self.joint_pos_err_last, self.joint_pos_err_last_last,
-                                        self.joint_vel.view(1, 12), self.joint_vel_last.view(1, 12), self.joint_vel_last_last.view(1, 12))
-        
-        self.joint_pos_err_last_last = torch.clone(self.joint_pos_err_last)
-        self.joint_pos_err_last      = torch.clone(self.joint_pos_err)
-        self.joint_vel_last_last     = torch.clone(self.joint_vel_last)
-        self.joint_vel_last          = torch.clone(self.joint_vel)
+            torques = 20 * 1 * (
+                        self.joint_pos_target - self.dof_pos + 0) - 0.5 * 1 * self.dof_vel
 
 
         return torch.clip(torques, -self.torque_limits, self.torque_limits)
