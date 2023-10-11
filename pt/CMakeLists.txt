@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(pt)
 
-set(CMAKE_INSTALL_RPATH "$ENV{HOME}/Downloads/libtorch/lib")
+set(CMAKE_INSTALL_RPATH "$ENV{Torch_DIR}/lib")
 set(EXTRA_LIBS -pthread libunitree_legged_sdk_amd64.so lcm)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
@@ -19,12 +19,12 @@ find_package(std_msgs REQUIRED)
 
 
 include_directories(
-  ~/Downloads/unitree_legged_sdk/include
+  $ENV{Unitree_SDK_DIR}/include
 )
 
 link_directories(
   lib
-  ~/Downloads/unitree_legged_sdk/lib
+  $ENV{Unitree_SDK_DIR}/lib
 )
 
 
